@@ -32,7 +32,8 @@ body {
     radial-gradient(50rem 40rem at -10% 110%, oklch(0.4 0.06 185 / 0.3), transparent 70%),
     var(--background);
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 body::before {
   content: ""; position: fixed; inset: 0; pointer-events: none; opacity: 0.35;
@@ -81,3 +82,11 @@ body::before {
 .glowbar.mint { background: linear-gradient(to right, oklch(0.85 0.12 160 / 0.25), transparent); }
 
 .input { height: 36px; border-radius: 12px; border: 1px solid oklch(1 0 0 / 12%); background: rgb(0 0 0 / 0.3); color: var(--foreground); padding: 0 12px; font: 400 13px var(--sans); display: flex; align-items: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

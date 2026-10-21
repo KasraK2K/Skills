@@ -1,64 +1,122 @@
 # Teal Glass UI
 
-A dark-only design system for dashboards, admin panels and data-heavy apps: a deep teal-black background with soft glows and a faint star field, frosted glass panels, one champagne-gold accent for anything primary or selected, and a small family of jewel colours for categories. It also includes a glowing **orb network graph** (canvas + d3-force) for hierarchies like workspace → groups → items.
+An open Agent Skill for building refined teal-black interfaces with restrained frosted glass, champagne-gold emphasis, semantic jewel accents, thin-number KPIs, and an optional glowing orb graph.
 
-This folder is a Claude skill. Install it and ask Claude for "my teal glass design" (or "make it look like Reachly", "dark glass dashboard", "orb graph like before") in any project, and it follows these exact tokens and recipes.
+![Teal Glass UI dashboard](images/dashboard.png)
 
-![Dashboard](images/dashboard.png)
+## Why this version is portable
+
+`teal-glass-ui` follows the open Agent Skills folder format: a required `SKILL.md`, focused references loaded on demand, optional UI metadata, and runnable examples. The canonical source avoids tool-specific commands in its instructions.
+
+It works natively with:
+
+| Agent | Install location or command | Invoke |
+|---|---|---|
+| Codex | User: `~/.agents/skills/teal-glass-ui/` · Repo: `.agents/skills/teal-glass-ui/` | `$teal-glass-ui` or ask for the style |
+| Claude Code | User: `~/.claude/skills/teal-glass-ui/` · Repo: `.claude/skills/teal-glass-ui/` | `/teal-glass-ui` or ask for the style |
+| Gemini CLI | User: `~/.agents/skills/teal-glass-ui/` · Repo: `.agents/skills/teal-glass-ui/` · Dev: `gemini skills link ./teal-glass-ui` | Ask Gemini to use `teal-glass-ui` |
+
+Other tools can use the same folder when they support the [Agent Skills specification](https://agentskills.io/specification). For tools that do not support Agent Skills, attach `SKILL.md` as explicit project instructions and make the `references/` files available; automatic discovery and progressive loading are tool-dependent.
+
+The folder is the source of truth. `teal-glass-ui.skill` is a packaged archive for clients that accept local `.skill` packages.
 
 ## What it looks like
 
-### Network graph with legend, toolbar, search bar and detail panel
+### Dashboard
 
-Hubs get a name above a gold stem line and a slanted count tag; files show only a small count badge; parts orbit their file as dots. Clicking a node opens the detail panel on the right. Hover does nothing except show a pointer cursor.
+A calm data hierarchy: compact glass header, one KPI strip, an analytical main column, an operational side column, semantic status color, and one gold primary action.
 
-![Knowledge graph](images/graph.png)
+![Browser-rendered dashboard example](images/dashboard.png)
 
 ### Tokens and components
 
-Palette, type scale, status pills, buttons, input, alert bars, chat bubbles, table and step markers.
+The palette, type scale, pills, buttons, fields, alerts, chat bubbles, table rows, and step markers.
 
-![Components](images/components.png)
+![Browser-rendered token and component example](images/components.png)
 
-## What's in this folder
+### Orb relationship graph
 
-| File | What it is |
-|---|---|
-| `SKILL.md` | The skill itself: every token, component recipe, the graph renderer, motion, accessibility rules and lessons learned. Readable on its own as a design-system spec. |
-| `teal-glass-ui.skill` | The same skill packaged for one-click install in Claude (Save skill / install). |
-| `images/` | The preview images above. |
-| `examples/` | The standalone pages the images were rendered from. `glass.css` is a framework-free version of the system (plain CSS, no Tailwind), and `graph.html` contains the canvas drawing code for the orbs, tick rings, labels and badges. Open any `.html` file in a browser. |
+Gold center, rose hubs, lavender and mint items, quiet edges, grouped glass controls, a legend, and a near-opaque detail panel.
 
-## Installing the skill
+![Browser-rendered knowledge graph example](images/graph.png)
 
-- **Claude (web / desktop):** open `teal-glass-ui.skill`, or upload it under Settings → Capabilities → Skills, and choose **Save skill**.
-- **Claude Code:** copy this folder (at least `SKILL.md`) to `~/.claude/skills/teal-glass-ui/` for all projects, or to `.claude/skills/teal-glass-ui/` inside one project.
+## Skill structure
 
-## The system at a glance
+```text
+teal-glass-ui/
+├── SKILL.md
+├── agents/
+│   └── openai.yaml
+├── references/
+│   ├── foundation.md
+│   ├── components.md
+│   ├── orb-graph.md
+│   └── quality-checks.md
+├── examples/
+│   ├── glass.css
+│   ├── dashboard.html
+│   ├── components.html
+│   └── graph.html
+├── images/
+└── teal-glass-ui.skill
+```
 
-**Colours**
+- `SKILL.md` is the concise trigger, workflow, and reference router.
+- `references/foundation.md` covers tokens, surfaces, typography, motion, stack adaptation, and theming boundaries.
+- `references/components.md` covers shells, dashboards, forms, tables, chat, alerts, and floating controls.
+- `references/orb-graph.md` covers hierarchy, rendering, layout, interaction, performance, and accessibility.
+- `references/quality-checks.md` is the responsive, accessibility, visual, performance, and engineering gate.
+- `examples/` contains standalone framework-neutral HTML/CSS that can be opened locally.
 
-| | oklch | Hex | Used for |
-|---|---|---|---|
-| Background | 0.17 0.018 200 | ≈ `#0a1214` | The ground, with two radial teal glows and a star field |
-| Glass | 0.32 0.04 195 / 0.28 | | Cards and panels, with `backdrop-filter: blur(20px) saturate(140%)` and a 9% white hairline |
-| Gold | 0.85 0.08 80 | `#e9c98b` | Primary buttons, selection, focus ring, the graph's centre |
-| Rose | 0.76 0.11 355 | `#ec8fac` | Hubs, "replied" |
-| Lavender | 0.74 0.12 290 | `#a99df2` | Items, "sent / contacted" |
-| Mint | 0.85 0.12 160 | `#7fe3b8` | Success, live, ready |
-| Teal | 0.74 0.07 185 | `#5fb8ad` | Neutral, new, draft |
-| Coral | 0.72 0.17 30 | `#ff7a6b` | Errors, failed, destructive |
+## Design system at a glance
 
-**Type:** Geist for UI, Geist Mono for timestamps, Roboto Condensed for graph labels. KPI numbers are big and light (48px, weight 300), section labels are 11px tracked capitals, all numbers use tabular figures.
+| Role | Value | Use |
+|---|---|---|
+| Background | `oklch(0.17 0.018 200)` | Teal-black canvas with broad radial light |
+| Glass | `oklch(0.32 0.04 195 / 0.28)` | Major floating surfaces |
+| Gold | `#e9c98b` | Primary, selected, focus, graph center |
+| Rose | `#ec8fac` | Highlight, hub, replied |
+| Lavender | `#a99df2` | Secondary category, contacted, sent |
+| Mint | `#7fe3b8` | Success, active, ready |
+| Teal | `#5fb8ad` | Neutral, new, draft |
+| Coral | `#ff7a6b` | Error, failed, destructive |
 
-**Shape:** 1rem base radius, 2xl cards, 3xl floating panels, full pills; elevation comes from the glass shadow, emphasis from a soft gold glow.
+Key rules:
 
-**Motion:** fades and staggered reveals, a slow glow pulse on live things, all switched off with `prefers-reduced-motion`.
+- The user chooses the style; a generic dashboard request does not trigger it.
+- Preserve the host project's framework, behavior, theme contracts, and component APIs.
+- Use glass, glow, and saturated color as hierarchy—not decoration.
+- Keep required information out of hover-only interactions.
+- Verify real desktop and mobile rendering, focus, reduced motion, and representative contrast.
+- Stop graph animation when idle.
 
-## Built for
+## Example prompts
 
-Next.js App Router + Tailwind CSS v4 + shadcn/ui + tw-animate-css + lucide-react, with d3-force for the graph. The tokens and the plain-CSS example work anywhere.
+```text
+Use $teal-glass-ui to restyle this dashboard while preserving its behavior,
+current data, responsive layout, and accessibility.
+```
+
+```text
+Use teal-glass-ui to build a full-bleed relationship graph for this hierarchy.
+Read the graph reference, keep the existing API model, and include an accessible
+list or detail representation for essential data.
+```
+
+```text
+Audit this page against the teal-glass-ui system. Report concrete visual,
+responsive, accessibility, and performance mismatches before editing.
+```
+
+## Development
+
+Open any file in `examples/` in a browser. When changing the skill:
+
+1. Keep `SKILL.md` concise and route detail to the relevant reference.
+2. Validate frontmatter and relative links.
+3. Run the standalone examples and inspect desktop plus narrow viewports.
+4. Rebuild `teal-glass-ui.skill` so the package matches the source folder.
 
 ## Origin
 
-Extracted from Reachly's redesign (October 2026), which was modelled on Fuselab Creative's "Control AI Policy Platform" concept and the "meely" agents dashboard. The preview images use made-up sample data.
+The system began as a production-inspired dark glass direction and has been rewritten as a product-neutral, cross-agent design skill. Preview data is fictional.

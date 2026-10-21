@@ -1,0 +1,8 @@
+interface:
+  display_name: "Teal Glass UI"
+  short_description: "Build refined teal-and-gold glass interfaces"
+  brand_color: "#0A1214"
+  default_prompt: "Use $teal-glass-ui to restyle this interface while preserving its behavior and accessibility."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Components</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Components</title>
 <link rel="stylesheet" href="glass.css">
 <style>
   .page { position: relative; z-index: 1; padding: 28px 36px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
@@ -21,6 +21,16 @@
   tr.hover td { background: rgb(255 255 255 / 0.03); }
   .stepn { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; }
   .title { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; border-radius: 18px; padding: 14px 20px; }
+  @media (max-width: 1100px) {
+    .page { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 20px; }
+  }
+  @media (max-width: 700px) {
+    .page { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+    .title { align-items: flex-start; flex-direction: column; gap: 12px; }
+    .sw { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .type div { gap: 16px; }
+    .type .muted { text-align: right; }
+  }
 </style></head>
 <body>
 <div class="page">

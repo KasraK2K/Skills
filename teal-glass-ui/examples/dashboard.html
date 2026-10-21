@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Dashboard</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dashboard</title>
 <link rel="stylesheet" href="glass.css">
 <style>
   .app { display: flex; height: 100vh; padding: 16px; gap: 24px; position: relative; z-index: 1; }
@@ -37,6 +37,22 @@
   .ring { width: 56px; height: 56px; }
   .check { display: flex; align-items: center; gap: 8px; font-size: 13px; }
   .check s { color: var(--muted-foreground); }
+  @media (max-width: 1000px) {
+    .app { height: auto; min-height: 100svh; gap: 12px; padding: 12px; }
+    .rail { display: none; }
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid2 { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    main { min-width: 0; gap: 12px; }
+    .header { align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+    .header > div:last-child { width: 100%; }
+    .kpis { grid-template-columns: 1fr; gap: 16px; padding: 18px; }
+    .kpi .v { font-size: 40px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .trace li { gap: 8px; }
+    .trace .t { width: 74px; font-size: 10px; }
+  }
 </style></head>
 <body>
 <div class="app">

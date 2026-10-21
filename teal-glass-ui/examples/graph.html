@@ -1,7 +1,8 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>Knowledge graph</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Knowledge graph</title>
 <link rel="stylesheet" href="glass.css">
 <style>
+  body { overflow: hidden; }
   .wrap { position: absolute; inset: 16px; border-radius: 28px; overflow: hidden; z-index: 1; }
   canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .toolbar { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 2; }
@@ -31,6 +32,19 @@
   .cards span { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
   dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; border-radius: 16px; background: rgb(255 255 255 / 0.03); padding: 12px; font-size: 13px; }
   dt { color: var(--muted-foreground); } dd { text-align: right; margin: 0; }
+  @media (max-width: 900px) {
+    .panel, .legend { display: none; }
+    .ask { left: 18px; right: 18px; }
+    .toolbar { transform: translateX(-50%) scale(0.88); transform-origin: top center; }
+  }
+  @media (max-width: 560px) {
+    .wrap { inset: 8px; border-radius: 20px; }
+    .toolbar { top: 10px; }
+    .toolbar .solo:not(.gold-solo) { display: none; }
+    .ask { left: 10px; right: 10px; bottom: 10px; }
+    .ask .ex { display: none; }
+    .strip { gap: 4px; }
+  }
 </style></head>
 <body>
 <div class="wrap glass">
@@ -130,9 +144,12 @@ function badge(ctx, x, y, text) {
   ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.fillText(text, x + 4, y - 3.5)
 }
 function hubLabel(ctx, n, unit, big) {
-  const x0 = n.x + n.r * 1.55, end = x0 + 92
-  const g = ctx.createLinearGradient(n.x + n.r, 0, end, 0); g.addColorStop(0, rgba(COLOR.gold, 0.85)); g.addColorStop(1, rgba(COLOR.gold, 0))
-  ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(n.x + n.r * 1.05, n.y); ctx.lineTo(end, n.y); ctx.stroke()
+  const placeLeft = compact && n.kind === "campaign" && n.x > cx
+  const x0 = placeLeft ? n.x - n.r * 1.55 - 92 : n.x + n.r * 1.55
+  const start = placeLeft ? n.x - n.r * 1.05 : n.x + n.r * 1.05
+  const end = placeLeft ? x0 : x0 + 92
+  const g = ctx.createLinearGradient(start, 0, end, 0); g.addColorStop(0, rgba(COLOR.gold, 0.85)); g.addColorStop(1, rgba(COLOR.gold, 0))
+  ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(start, n.y); ctx.lineTo(end, n.y); ctx.stroke()
   ctx.font = font(300, big ? 17 : 15); ctx.fillStyle = "rgba(236,246,244,0.92)"; ctx.fillText(n.label, x0 + 4, n.y - 6)
   tag(ctx, x0 + 8, n.y + 5, String(n.count), unit)
 }
@@ -153,9 +170,11 @@ const cv = document.getElementById("c")
 const W = cv.clientWidth, H = cv.clientHeight, dpr = devicePixelRatio || 1
 cv.width = W * dpr; cv.height = H * dpr
 const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr)
-const cx = (W - 352) / 2 + 20, cy = H / 2 - 75
+const compact = W <= 900
+const panelWidth = compact ? 0 : 352
+const cx = (W - panelWidth) / 2 + (compact ? 0 : 20), cy = H / 2 - (compact ? 45 : 75)
 const root = { x: cx, y: cy, r: 26, label: "Nova Studio", count: 4 }
-const R = 250
+const R = compact ? Math.max(90, Math.min(160, W * 0.3)) : 250
 const nodes = [], links = [], chunks = []
 let seed = 7
 const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280)
@@ -204,7 +223,8 @@ for (const d of nodes.filter((n) => n.kind === "doc")) {
 }
 // Hubs
 for (const h of nodes.filter((n) => n.kind === "campaign")) {
-  tickRing(ctx, h.x, h.y, h.r, COLOR.rose, false); orb(ctx, h.x, h.y, h.r, COLOR.rose, 0.35); hubLabel(ctx, h, "files", false)
+  tickRing(ctx, h.x, h.y, h.r, COLOR.rose, false); orb(ctx, h.x, h.y, h.r, COLOR.rose, 0.35)
+  if (!compact) hubLabel(ctx, h, "files", false)
 }
 // Root
 tickRing(ctx, root.x, root.y, root.r, COLOR.gold, true); orb(ctx, root.x, root.y, root.r, COLOR.gold, 1); hubLabel(ctx, root, "campaigns", true)
