@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Knowledge graph</title>
+<link rel="stylesheet" href="glass.css">
+<style>
+  .wrap { position: absolute; inset: 16px; border-radius: 28px; overflow: hidden; z-index: 1; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .toolbar { position: absolute; top: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 8px; z-index: 2; }
+  .group { border-radius: 16px; padding: 4px; display: flex; }
+  .solo { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; }
+  .solo svg, .group svg { width: 16px; height: 16px; }
+  .pressed { background: rgb(0 0 0 / 0.4); color: var(--primary); box-shadow: 0 0 0 1px oklch(0.85 0.08 80 / 0.6), 0 0 24px -4px oklch(0.85 0.08 80 / 0.55); }
+  .gold-solo { background: linear-gradient(to bottom, oklch(0.9 0.08 80), oklch(0.78 0.09 75)); color: var(--primary-foreground); box-shadow: 0 0 0 1px oklch(0.85 0.08 80 / 0.6), 0 0 24px -4px oklch(0.85 0.08 80 / 0.55); }
+  .legend { position: absolute; left: 18px; bottom: 18px; width: 200px; border-radius: 18px; padding: 16px; z-index: 2; font-size: 13px; }
+  .legend ul { list-style: none; padding: 0; display: grid; gap: 9px; margin-top: 12px; }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .cap { border-radius: 999px; padding: 2px 7px; display: flex; align-items: center; gap: 6px; font-size: 11px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+  .legend .foot { margin-top: 12px; padding-top: 12px; border-top: 1px solid rgb(255 255 255 / 0.1); display: grid; gap: 6px; font-size: 12px; }
+  .legend .foot span { display: flex; justify-content: space-between; }
+  .ask { position: absolute; left: 240px; right: 420px; bottom: 18px; z-index: 2; }
+  .ask form { border-radius: 18px; padding: 12px; }
+  .strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); margin-bottom: 8px; }
+  .strip b { display: block; font-size: 16px; font-weight: 300; color: var(--foreground); letter-spacing: 0; }
+  .ex { border-radius: 18px; padding: 12px; margin-bottom: 8px; }
+  .ex .item { border-radius: 12px; background: rgb(255 255 255 / 0.03); padding: 8px; font-size: 12px; }
+  .panel { position: absolute; top: 18px; right: 18px; bottom: 18px; width: 352px; border-radius: 26px; padding: 20px; z-index: 3; background: var(--popover) !important; display: flex; flex-direction: column; gap: 16px; }
+  .panel h2 { font-size: 18px; font-weight: 500; line-height: 1.3; }
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cards div { border-radius: 16px; padding: 12px; }
+  .cards b { display: block; font-size: 24px; font-weight: 300; }
+  .cards span { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted-foreground); }
+  dl { display: grid; grid-template-columns: auto 1fr; gap: 8px 16px; border-radius: 16px; background: rgb(255 255 255 / 0.03); padding: 12px; font-size: 13px; }
+  dt { color: var(--muted-foreground); } dd { text-align: right; margin: 0; }
+</style></head>
+<body>
+<div class="wrap glass">
+  <canvas id="c"></canvas>
+
+  <div class="toolbar">
+    <div class="group glass"><span class="icon-btn pressed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></span><span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="2" width="6" height="6" rx="1"/><rect x="2" y="16" width="6" height="6" rx="1"/><rect x="16" y="16" width="6" height="6" rx="1"/><path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3M12 12V8"/></svg></span></div>
+    <div class="group glass"><span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></span><span class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></span></div>
+    <span class="solo glass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></span>
+    <span class="solo glass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg></span>
+    <span class="solo gold-solo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg></span>
+  </div>
+
+  <div class="legend glass">
+    <div class="eyebrow" style="letter-spacing:0.14em">Legend</div>
+    <ul>
+      <li><span class="cap glass"><span class="dot" style="background:#e9c98b;color:#e9c98b"></span>1</span>Workspace</li>
+      <li><span class="cap glass"><span class="dot" style="background:#ec8fac;color:#ec8fac"></span>4</span>Campaigns</li>
+      <li><span class="cap glass"><span class="dot" style="background:#7fe3b8;color:#7fe3b8"></span><span class="dot" style="background:#a99df2;color:#a99df2"></span>14</span>Files <span class="muted" style="font-size:10px">company · campaign</span></li>
+      <li><span class="cap glass"><span class="dot" style="width:6px;height:6px;background:var(--muted-foreground);color:var(--muted-foreground)"></span>96</span>Parts</li>
+    </ul>
+    <div class="foot"><span>Processing <span class="pill gold">1</span></span><span>Failed <span class="pill coral">0</span></span></div>
+  </div>
+
+  <div class="ask">
+    <div class="ex glass">
+      <div class="eyebrow" style="display:flex;justify-content:space-between;letter-spacing:0.14em">Excerpts <span style="text-transform:none;letter-spacing:0">Clear</span></div>
+      <div class="item" style="margin-top:8px"><div style="display:flex;justify-content:space-between;font-weight:500;margin-bottom:4px"><span>pricing.md</span><span class="pill mint">90%</span></div><div class="muted">Starter costs $49 per month for one account. Pro is $99 and includes three accounts, AI replies and lead scoring…</div></div>
+    </div>
+    <form class="glass">
+      <div class="strip"><div>Files<b>14</b></div><div>Parts<b>96</b></div><div>Campaigns<b>4</b></div><div>Failed<b>0</b></div></div>
+      <div style="display:flex;gap:8px"><div class="input" style="flex:1">How much does the Pro plan cost?</div><span class="icon-btn" style="background:linear-gradient(to bottom, oklch(0.9 0.08 80), oklch(0.78 0.09 75));color:var(--primary-foreground)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg></span></div>
+    </form>
+  </div>
+
+  <aside class="panel glass">
+    <div style="display:flex;gap:12px;align-items:flex-start">
+      <span style="width:16px;height:16px;border-radius:50%;margin-top:6px;background:#a99df2;box-shadow:0 0 14px #a99df2"></span>
+      <div style="flex:1"><div class="eyebrow" style="letter-spacing:0.08em">File</div><h2>spring-offer.md</h2></div>
+      <span class="icon-btn" style="color:var(--muted-foreground)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+    </div>
+    <dl>
+      <dt>Status</dt><dd><span class="pill mint">Ready</span></dd>
+      <dt>Belongs to</dt><dd>Spring launch</dd>
+      <dt>Type</dt><dd>Markdown</dd>
+      <dt>Size</dt><dd>6 KB</dd>
+      <dt>Parts</dt><dd>4</dd>
+      <dt>Added</dt><dd>Oct 21, 04:04 PM</dd>
+      <dt>Updated</dt><dd>Oct 21, 04:06 PM</dd>
+    </dl>
+    <div style="display:flex;gap:8px"><span class="btn btn-glass" style="height:28px;font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Edit text</span><span class="btn btn-glass" style="height:28px;font-size:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download</span></div>
+    <span class="btn btn-ghost" style="color:var(--destructive);height:28px;font-size:12px;align-self:flex-start;padding:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Delete file</span>
+  </aside>
+</div>
+
+<script>
+const COLOR = { gold: "#e9c98b", rose: "#ec8fac", lavender: "#a99df2", mint: "#7fe3b8", teal: "#5fb8ad", coral: "#ff7a6b" }
+const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16))
+const rgba = (c, a) => `rgba(${hex(c).join(",")},${a})`
+const shade = (c, f) => `rgb(${hex(c).map((v) => Math.round(v * f)).join(",")})`
+const TAU = Math.PI * 2
+const font = (w, px) => `${w} ${px}px "Roboto Condensed", "Segoe UI", sans-serif`
+
+function orb(ctx, x, y, r, c, glow) {
+  if (glow > 0) {
+    const g = ctx.createRadialGradient(x, y, r * 0.6, x, y, r * 3.4)
+    g.addColorStop(0, rgba(c, 0.4 * glow)); g.addColorStop(1, rgba(c, 0))
+    ctx.globalCompositeOperation = "lighter"; ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r * 3.4, 0, TAU); ctx.fill(); ctx.globalCompositeOperation = "source-over"
+  }
+  const b = ctx.createRadialGradient(x - r * 0.35, y - r * 0.4, r * 0.08, x, y, r)
+  b.addColorStop(0, "#ffffff"); b.addColorStop(0.28, c); b.addColorStop(1, shade(c, 0.4))
+  ctx.fillStyle = b; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill()
+  ctx.strokeStyle = "rgba(255,255,255,0.28)"; ctx.lineWidth = 0.75; ctx.stroke()
+}
+function tickRing(ctx, x, y, r, c, spiky) {
+  const n = spiky ? 64 : 44
+  ctx.strokeStyle = rgba(c, spiky ? 0.55 : 0.4); ctx.lineWidth = spiky ? 0.8 : 0.6; ctx.beginPath()
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * TAU, from = r * (spiky ? 1.08 : 1.2), to = spiky ? r * (1.18 + 0.22 * Math.abs(Math.sin(i * 1.7))) : r * 1.5
+    ctx.moveTo(x + Math.cos(a) * from, y + Math.sin(a) * from); ctx.lineTo(x + Math.cos(a) * to, y + Math.sin(a) * to)
+  }
+  ctx.stroke()
+}
+function tag(ctx, x, y, value, unit) {
+  const h = 18, skew = 5
+  ctx.font = font(400, 13); const vw = ctx.measureText(value).width
+  ctx.font = font(600, 8); const uw = unit ? ctx.measureText(unit).width + 2 : 0
+  const w = 14 + vw + uw
+  ctx.beginPath(); ctx.moveTo(x + skew, y); ctx.lineTo(x + w + skew, y); ctx.lineTo(x + w, y + h); ctx.lineTo(x, y + h); ctx.closePath()
+  ctx.fillStyle = "rgba(5,16,18,0.72)"; ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,0.12)"; ctx.lineWidth = 1; ctx.stroke()
+  ctx.font = font(400, 13); ctx.fillStyle = "rgba(255,255,255,0.92)"; ctx.fillText(value, x + 7, y + 13.5)
+  if (unit) { ctx.font = font(600, 8); ctx.fillStyle = COLOR.gold; ctx.fillText(unit, x + 7 + vw + 2, y + 8) }
+}
+function badge(ctx, x, y, text) {
+  ctx.font = font(600, 10); const w = ctx.measureText(text).width + 8, h = 14
+  ctx.fillStyle = "rgba(4,12,13,0.82)"; ctx.beginPath(); ctx.roundRect(x, y - h, w, h, 3); ctx.fill()
+  ctx.fillStyle = "rgba(255,255,255,0.9)"; ctx.fillText(text, x + 4, y - 3.5)
+}
+function hubLabel(ctx, n, unit, big) {
+  const x0 = n.x + n.r * 1.55, end = x0 + 92
+  const g = ctx.createLinearGradient(n.x + n.r, 0, end, 0); g.addColorStop(0, rgba(COLOR.gold, 0.85)); g.addColorStop(1, rgba(COLOR.gold, 0))
+  ctx.strokeStyle = g; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(n.x + n.r * 1.05, n.y); ctx.lineTo(end, n.y); ctx.stroke()
+  ctx.font = font(300, big ? 17 : 15); ctx.fillStyle = "rgba(236,246,244,0.92)"; ctx.fillText(n.label, x0 + 4, n.y - 6)
+  tag(ctx, x0 + 8, n.y + 5, String(n.count), unit)
+}
+
+// Sample hierarchy, laid out as a radial tree.
+// Files are placed so the space to the right of every hub (its label) stays clear.
+const camps = [
+  { label: "Spring launch", docs: [["launch-faq.md", -2.95], ["testimonials.pdf", -2.35], ["spring-offer.md", -1.65]], a: -2.25 },
+  { label: "Agency outreach", docs: [["agency-pitch.md", -1.5], ["case-studies.pdf", -0.95]], a: -0.55 },
+  { label: "Webinar invites", docs: [["webinar-agenda.md", 1.05], ["speaker-bios.docx", 1.75]], a: 1.0 },
+  { label: "Holiday promo", docs: [["holiday-deals.csv", 2.2], ["gift-guide.md", 2.95]], a: 2.55 },
+]
+const company = [["pricing.md", -1.2], ["faq.md", -2.15], ["brand-voice.md", 3.0], ["refund-policy.md", 2.05], ["product-list.csv", 1.2]]
+const selectedName = "spring-offer.md"
+const hits = new Set(["pricing.md#1"])
+
+const cv = document.getElementById("c")
+const W = cv.clientWidth, H = cv.clientHeight, dpr = devicePixelRatio || 1
+cv.width = W * dpr; cv.height = H * dpr
+const ctx = cv.getContext("2d"); ctx.scale(dpr, dpr)
+const cx = (W - 352) / 2 + 20, cy = H / 2 - 75
+const root = { x: cx, y: cy, r: 26, label: "Nova Studio", count: 4 }
+const R = 250
+const nodes = [], links = [], chunks = []
+let seed = 7
+const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280)
+
+for (const c of camps) {
+  const hub = { x: cx + Math.cos(c.a) * R, y: cy + Math.sin(c.a) * R * 0.78, r: 13, label: c.label, count: c.docs.length, kind: "campaign" }
+  nodes.push(hub); links.push(["spoke", root, hub])
+  c.docs.forEach(([name, a]) => {
+    const d = { x: hub.x + Math.cos(a) * 92, y: hub.y + Math.sin(a) * 84, r: 7, label: name, count: 2 + Math.floor(rnd() * 6), kind: "doc", color: COLOR.lavender }
+    nodes.push(d); links.push(["branch", hub, d])
+  })
+}
+company.forEach(([name, a]) => {
+  const d = { x: cx + Math.cos(a) * 128, y: cy + Math.sin(a) * 112, r: 7, label: name, count: 3 + Math.floor(rnd() * 8), kind: "doc", color: COLOR.mint }
+  nodes.push(d); links.push(["spoke", root, d])
+})
+for (const d of nodes.filter((n) => n.kind === "doc")) {
+  for (let i = 0; i < d.count; i++) {
+    const a = (i / d.count) * TAU + rnd()
+    const k = { x: d.x + Math.cos(a) * (15 + rnd() * 5), y: d.y + Math.sin(a) * (15 + rnd() * 5), r: 2.2, color: d.color, hit: hits.has(`${d.label}#${i}`) }
+    chunks.push(k); links.push(["leaf", d, k])
+  }
+}
+
+// Edges
+for (const [kind, a, b] of links) {
+  if (kind === "spoke") { const g = ctx.createLinearGradient(a.x, a.y, b.x, b.y); g.addColorStop(0, rgba(COLOR.gold, 0.9)); g.addColorStop(1, rgba(COLOR.gold, 0.15)); ctx.strokeStyle = g; ctx.lineWidth = 1.8; ctx.setLineDash([]) }
+  else if (kind === "branch") { ctx.strokeStyle = rgba(COLOR.teal, 0.45); ctx.lineWidth = 1; ctx.setLineDash([]) }
+  else { ctx.strokeStyle = rgba(COLOR.mint, 0.25); ctx.lineWidth = 0.6; ctx.setLineDash([2, 2]) }
+  ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke()
+}
+ctx.setLineDash([])
+// Chunks
+for (const k of chunks) {
+  ctx.fillStyle = k.hit ? COLOR.mint : rgba(k.color, 0.75); ctx.beginPath(); ctx.arc(k.x, k.y, k.hit ? 3.5 : k.r, 0, TAU); ctx.fill()
+  if (k.hit) orb(ctx, k.x, k.y, 2.2, COLOR.mint, 1)
+}
+// Docs
+for (const d of nodes.filter((n) => n.kind === "doc")) {
+  const sel = d.label === selectedName
+  const r = sel ? d.r * 1.5 : d.r
+  tickRing(ctx, d.x, d.y, r, d.color, false)
+  orb(ctx, d.x, d.y, r, d.color, sel ? 1 : 0.35)
+  badge(ctx, d.x + r * 0.9, d.y - r * 1.1, String(d.count))
+  if (sel) { ctx.font = font(400, 14); ctx.fillStyle = "rgba(236,246,244,0.92)"; ctx.fillText(d.label, d.x + Math.max(r * 2.3, 20), d.y + 4) }
+}
+// Hubs
+for (const h of nodes.filter((n) => n.kind === "campaign")) {
+  tickRing(ctx, h.x, h.y, h.r, COLOR.rose, false); orb(ctx, h.x, h.y, h.r, COLOR.rose, 0.35); hubLabel(ctx, h, "files", false)
+}
+// Root
+tickRing(ctx, root.x, root.y, root.r, COLOR.gold, true); orb(ctx, root.x, root.y, root.r, COLOR.gold, 1); hubLabel(ctx, root, "campaigns", true)
+</script>
+</body></html>

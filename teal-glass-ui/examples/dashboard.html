@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Dashboard</title>
+<link rel="stylesheet" href="glass.css">
+<style>
+  .app { display: flex; height: 100vh; padding: 16px; gap: 24px; position: relative; z-index: 1; }
+  .rail { width: 64px; border-radius: 20px; display: flex; flex-direction: column; align-items: center; padding: 14px 0; gap: 10px; background: oklch(0.2 0.025 198 / 0.7); }
+  .logo { width: 32px; height: 32px; border-radius: 10px; background: linear-gradient(135deg, oklch(0.9 0.08 80), oklch(0.72 0.09 70)); display: grid; place-items: center; margin-bottom: 10px; color: var(--primary-foreground); font-weight: 700; }
+  .rail .icon-btn { color: oklch(0.8 0.02 195); }
+  .rail .active { color: oklch(0.9 0.07 80); background: oklch(0.85 0.08 80 / 0.12); }
+  .rail .sep { width: 28px; height: 1px; background: rgb(255 255 255 / 0.08); margin: 6px 0; }
+  main { flex: 1; display: flex; flex-direction: column; gap: 20px; }
+  .header { border-radius: 18px; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .header h1 { font-size: 18px; font-weight: 500; letter-spacing: -0.01em; }
+  .header p { font-size: 12px; margin-top: 2px; }
+  .kpis { border-radius: 18px; padding: 24px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .kpi .v { font-size: 48px; font-weight: 300; letter-spacing: -0.02em; line-height: 1.1; margin-top: 4px; }
+  .kpi .h { font-size: 12px; margin-top: 2px; }
+  .kpi .delta { font-size: 12px; }
+  .grid2 { display: grid; grid-template-columns: 1.55fr 1fr; gap: 20px; }
+  .card { border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .card h3 { font-size: 15px; font-weight: 500; }
+  .bar { display: flex; height: 10px; border-radius: 999px; overflow: hidden; background: rgb(255 255 255 / 0.05); }
+  .bar div { box-shadow: 0 0 12px currentColor; }
+  .tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .tile { border-radius: 12px; padding: 12px; }
+  .tile .l { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted-foreground); }
+  .tile .l span { width: 8px; height: 8px; border-radius: 50%; }
+  .tile .v { font-size: 24px; font-weight: 300; margin-top: 4px; }
+  .acct { display: flex; justify-content: space-between; align-items: center; }
+  .meter { height: 6px; border-radius: 999px; background: rgb(255 255 255 / 0.06); overflow: hidden; }
+  .meter div { height: 100%; width: 62%; background: linear-gradient(90deg, oklch(0.85 0.12 160), oklch(0.74 0.07 185)); box-shadow: 0 0 10px oklch(0.85 0.12 160 / 0.7); }
+  .trace { list-style: none; padding: 0 0 0 12px; border-left: 1px solid rgb(255 255 255 / 0.1); display: grid; gap: 12px; }
+  .trace li { display: flex; gap: 12px; align-items: flex-start; font-size: 13px; }
+  .trace .t { width: 110px; flex-shrink: 0; font-size: 12px; color: var(--muted-foreground); }
+  .trace svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 1px; }
+  .trace .d { font-size: 12px; color: var(--muted-foreground); margin-top: 2px; }
+  .ring { width: 56px; height: 56px; }
+  .check { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .check s { color: var(--muted-foreground); }
+</style></head>
+<body>
+<div class="app">
+  <nav class="rail glass">
+    <div class="logo">N</div>
+    <div class="icon-btn active glow-gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg></div>
+    <div class="sep"></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 6 4 14M12 6v14M8 8v12M4 4v16"/></svg></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg></div>
+    <div class="sep"></div>
+    <div class="icon-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+  </nav>
+
+  <main>
+    <div class="header glass">
+      <div><h1>Dashboard</h1><p class="muted">Outreach across all accounts, last 30 days</p></div>
+      <div style="display:flex;gap:8px">
+        <span class="btn btn-glass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>Search</span>
+        <span class="btn btn-primary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>New campaign</span>
+      </div>
+    </div>
+
+    <div class="kpis glass">
+      <div class="kpi"><div class="eyebrow">Leads</div><div class="v num">12,480</div><div class="h muted">4 lists imported</div></div>
+      <div class="kpi"><div class="eyebrow">Contacted</div><div class="v num">8,214</div><div class="h muted">66% of leads</div></div>
+      <div class="kpi"><div class="eyebrow">Reply rate</div><div class="v num">23%</div><div class="h muted">1,890 replied</div></div>
+      <div class="kpi"><div class="eyebrow">Active campaigns</div><div class="v num">6</div><div class="h muted">2 drafts waiting</div></div>
+    </div>
+
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="card glass">
+          <div><h3>Pipeline</h3><div class="muted" style="font-size:13px;margin-top:2px">12,480 leads</div></div>
+          <div class="bar">
+            <div style="width:34%;background:var(--chart-5);color:var(--chart-5)"></div>
+            <div style="width:30%;background:var(--chart-3);color:var(--chart-3)"></div>
+            <div style="width:15%;background:var(--chart-2);color:var(--chart-2)"></div>
+            <div style="width:9%;background:var(--chart-4);color:var(--chart-4)"></div>
+            <div style="width:12%;background:var(--destructive);color:var(--destructive)"></div>
+          </div>
+          <div class="tiles">
+            <div class="tile glass"><div class="l"><span style="background:var(--chart-5)"></span>New</div><div class="v num">4,266</div></div>
+            <div class="tile glass"><div class="l"><span style="background:var(--chart-3)"></span>Contacted</div><div class="v num">3,744</div></div>
+            <div class="tile glass"><div class="l"><span style="background:var(--chart-2)"></span>Replied</div><div class="v num">1,890</div></div>
+            <div class="tile glass"><div class="l"><span style="background:var(--chart-4)"></span>Converted</div><div class="v num">1,104</div></div>
+            <div class="tile glass"><div class="l"><span style="background:var(--destructive)"></span>Not interested</div><div class="v num">1,476</div></div>
+          </div>
+        </div>
+
+        <div class="card glass">
+          <h3>Recent activity</h3>
+          <ul class="trace">
+            <li><span class="t mono">Oct 21, 13:05</span><svg viewBox="0 0 24 24" fill="none" stroke="oklch(0.85 0.12 160)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><div>Reply from <b style="font-weight:500">@studio.lumen</b> · Spring launch<div class="d">"Sounds good — can we talk Thursday?"</div></div></li>
+            <li><span class="t mono">Oct 21, 12:48</span><svg viewBox="0 0 24 24" fill="none" stroke="oklch(0.74 0.12 290)" stroke-width="2"><path d="m22 2-7 20-4-9-9-4z"/><path d="M22 2 11 13"/></svg><div>First message sent to <b style="font-weight:500">@north.fitness</b> · Agency outreach</div></li>
+            <li><span class="t mono">Oct 21, 12:31</span><svg viewBox="0 0 24 24" fill="none" stroke="oklch(0.74 0.12 290)" stroke-width="2"><path d="M15 10l5 5-5 5"/><path d="M4 4v7a4 4 0 0 0 4 4h12"/></svg><div>Follow-up sent to <b style="font-weight:500">@kale.kitchen</b> · Spring launch</div></li>
+            <li><span class="t mono">Oct 21, 12:02</span><svg viewBox="0 0 24 24" fill="none" stroke="oklch(0.72 0.17 30)" stroke-width="2"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg><div>Couldn't message <b style="font-weight:500">@old.account</b><div class="d">Profile is private</div></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:20px">
+        <div class="glowbar coral"><div style="font-weight:500">Sending from @nova.studio is paused</div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:13px"><span class="muted">Instagram showed a warning. Check before resuming.</span><span class="btn btn-primary" style="height:28px">Resume</span></div></div>
+
+        <div class="card glass">
+          <div class="acct"><h3>@nova.studio</h3><span class="pill mint"><span class="live-dot"></span> LIVE</span></div>
+          <div class="muted" style="font-size:13px;color:oklch(0.85 0.12 160)">● Extension online · 14 queued</div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline"><span class="num" style="font-size:30px;font-weight:600">31<span class="muted" style="font-size:15px;font-weight:400"> / 50</span></span><span class="muted" style="font-size:13px">sent in last 24h</span></div>
+          <div class="meter"><div></div></div>
+        </div>
+
+        <div class="card glass">
+          <div style="display:flex;gap:16px;align-items:center">
+            <svg class="ring" viewBox="0 0 52 52" style="transform:rotate(-90deg)"><circle cx="26" cy="26" r="22" fill="none" stroke-width="5" stroke="oklch(0.32 0.03 195 / 0.6)"/><circle cx="26" cy="26" r="22" fill="none" stroke-width="5" stroke-linecap="round" stroke="oklch(0.85 0.08 80)" stroke-dasharray="138.2" stroke-dashoffset="55.3"/></svg>
+            <div><h3>Get set up</h3><div class="muted" style="font-size:13px">3 of 5 done</div></div>
+          </div>
+          <div class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.85 0.12 160)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><s>Connect your account</s></div>
+          <div class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.85 0.12 160)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><s>Import your leads</s></div>
+          <div class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.85 0.12 160)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><s>Write a message</s></div>
+          <div class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.74 0.02 195)" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Install the browser extension</div>
+          <div class="check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="oklch(0.74 0.02 195)" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Start a campaign</div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+</body></html>

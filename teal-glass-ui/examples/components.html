@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Components</title>
+<link rel="stylesheet" href="glass.css">
+<style>
+  .page { position: relative; z-index: 1; padding: 28px 36px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .card { border-radius: 18px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .card h3 { font-size: 15px; font-weight: 500; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .sw { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .sw div { border-radius: 14px; padding: 10px; font-size: 12px; }
+  .sw i { display: block; height: 44px; border-radius: 10px; margin-bottom: 8px; box-shadow: 0 0 18px -4px var(--c); background: var(--c); }
+  .sw b { font-weight: 500; display: block; }
+  .type div { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid rgb(255 255 255 / 0.06); padding-bottom: 8px; }
+  .bubble { max-width: 80%; border-radius: 16px; padding: 8px 12px; font-size: 13px; }
+  .theirs { border-bottom-left-radius: 6px; }
+  .ours { margin-left: auto; border-bottom-right-radius: 6px; background: oklch(0.85 0.08 80 / 0.14); box-shadow: inset 0 0 0 1px oklch(0.85 0.08 80 / 0.3); }
+  .ts { font-size: 11px; color: var(--muted-foreground); margin-top: 3px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 500; color: var(--muted-foreground); padding: 8px 6px; border-bottom: 1px solid rgb(255 255 255 / 0.09); }
+  td { padding: 9px 6px; border-bottom: 1px solid rgb(255 255 255 / 0.05); }
+  tr.hover td { background: rgb(255 255 255 / 0.03); }
+  .stepn { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; }
+  .title { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; border-radius: 18px; padding: 14px 20px; }
+</style></head>
+<body>
+<div class="page">
+  <div class="title glass"><div><div style="font-size:18px;font-weight:500">Teal Glass UI</div><div class="muted" style="font-size:12px;margin-top:2px">Tokens and components</div></div><div class="row"><span class="btn btn-glass">Secondary</span><span class="btn btn-primary">Primary action</span></div></div>
+
+  <div class="card glass">
+    <h3>Palette</h3>
+    <div class="sw">
+      <div class="glass"><i style="--c:oklch(0.85 0.08 80)"></i><b>Gold</b><span class="muted">primary · selected</span></div>
+      <div class="glass"><i style="--c:oklch(0.76 0.11 355)"></i><b>Rose</b><span class="muted">hubs · replied</span></div>
+      <div class="glass"><i style="--c:oklch(0.74 0.12 290)"></i><b>Lavender</b><span class="muted">items · sent</span></div>
+      <div class="glass"><i style="--c:oklch(0.85 0.12 160)"></i><b>Mint</b><span class="muted">success · live</span></div>
+      <div class="glass"><i style="--c:oklch(0.74 0.07 185)"></i><b>Teal</b><span class="muted">neutral · new</span></div>
+      <div class="glass"><i style="--c:oklch(0.72 0.17 30)"></i><b>Coral</b><span class="muted">error · failed</span></div>
+    </div>
+  </div>
+
+  <div class="card glass type">
+    <h3>Type</h3>
+    <div><span style="font-size:48px;font-weight:300;letter-spacing:-0.02em" class="num">23%</span><span class="muted" style="font-size:12px">KPI · 48 light</span></div>
+    <div><span style="font-size:24px;font-weight:300" class="num">1,890</span><span class="muted" style="font-size:12px">Tile · 24 light</span></div>
+    <div><span style="font-size:18px;font-weight:500">Page title</span><span class="muted" style="font-size:12px">18 medium</span></div>
+    <div><span class="eyebrow">Section label</span><span class="muted" style="font-size:12px">11 · tracked caps</span></div>
+    <div style="border:0"><span class="mono muted" style="font-size:12px">Oct 21, 13:05</span><span class="muted" style="font-size:12px">Timestamps · mono</span></div>
+  </div>
+
+  <div class="card glass">
+    <h3>Status pills</h3>
+    <div class="row">
+      <span class="pill muted">Draft</span><span class="pill lavender">Contacted</span><span class="pill rose">Replied</span><span class="pill mint">Converted</span><span class="pill gold">Paused</span><span class="pill coral">Failed</span>
+      <span class="pill mint"><span class="live-dot"></span> LIVE</span><span class="pill mint">90%</span>
+    </div>
+    <h3>Buttons</h3>
+    <div class="row">
+      <span class="btn btn-primary">Save</span><span class="btn btn-glass">Cancel</span><span class="btn btn-ghost">Ghost</span><span class="btn btn-danger">Delete</span>
+      <span class="icon-btn glass" style="border-radius:12px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg></span>
+      <span class="icon-btn glow-gold" style="background:rgb(0 0 0 / .4);color:var(--primary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg></span>
+    </div>
+    <h3>Input</h3>
+    <div class="input">Ask a question…</div>
+  </div>
+
+  <div class="card glass">
+    <h3>Alerts</h3>
+    <div class="glowbar coral"><div style="font-weight:500">Sending is paused</div><div class="muted" style="font-size:13px;margin-top:4px">Instagram showed a warning on this account.</div></div>
+    <div class="glowbar gold"><div style="font-weight:500">Daily limit almost reached</div><div class="muted" style="font-size:13px;margin-top:4px">48 of 50 messages sent today.</div></div>
+    <div class="glowbar mint"><div style="font-weight:500">3 new replies</div><div class="muted" style="font-size:13px;margin-top:4px">Follow-ups for these leads were stopped.</div></div>
+  </div>
+
+  <div class="card glass">
+    <h3>Chat</h3>
+    <div class="bubble theirs glass">Hey! Is the Pro plan billed monthly?<div class="ts">13:02</div></div>
+    <div class="bubble ours">Yes — $99 a month, or save 20% yearly.<div class="ts">13:04</div></div>
+    <div class="bubble theirs glass">Perfect, let's talk Thursday.<div class="ts">13:05</div></div>
+  </div>
+
+  <div class="card glass">
+    <h3>Table</h3>
+    <table>
+      <tr><th>Lead</th><th>Status</th><th style="text-align:right">Followers</th></tr>
+      <tr><td>@studio.lumen</td><td><span class="pill rose">Replied</span></td><td style="text-align:right" class="num">18.2k</td></tr>
+      <tr class="hover"><td>@north.fitness</td><td><span class="pill lavender">Contacted</span></td><td style="text-align:right" class="num">9.4k</td></tr>
+      <tr><td>@kale.kitchen</td><td><span class="pill mint">Converted</span></td><td style="text-align:right" class="num">31.0k</td></tr>
+      <tr><td style="border:0">@old.account</td><td style="border:0"><span class="pill coral">Failed</span></td><td style="text-align:right;border:0" class="num">2.1k</td></tr>
+    </table>
+    <div class="row" style="gap:10px">
+      <span class="stepn glass glow-gold" style="color:var(--primary)">✓</span><span style="font-size:13px">Knowledge</span>
+      <span class="stepn glass">2</span><span style="font-size:13px">Messages</span>
+      <span class="stepn glass">3</span><span style="font-size:13px">Leads</span>
+    </div>
+  </div>
+</div>
+</body></html>
